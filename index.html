@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>อะไหล่ Fortuner 2022</title>
+<meta name="description" content="ร้านอะไหล่ Toyota Fortuner 2022 หมุนรถ 3D ดูได้รอบคัน 360 องศา กดจุดเพื่อดูอะไหล่ ราคา สต็อก และสั่งซื้อ">
+<meta name="theme-color" content="#16202A">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="อะไหล่ Fortuner">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: workshop catalogue — shop (3D turntable + part sheet + cart drawer) and back office (orders, products, settings) */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#16202A; --muted:#5A6773; --line:#D3DAE1;
+  --accent:#D4500F; --accent-ink:#FFFFFF; --accent-soft:#FBE7DC;
+  --stage-a:#FDFDFE; --stage-b:#CBD3DB;
+  --ok:#1F7A4D; --warn:#A86400; --bad:#B42318; --info:#2459A8;
+  --f-display:"Kanit","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0E141A; --surface:#17202A; --ink:#E5EAEF; --muted:#94A2AF; --line:#2A3743;
+  --accent:#FF7A3D; --accent-ink:#1A0E07; --accent-soft:#3A2116;
+  --stage-a:#33414F; --stage-b:#10161C;
+  --ok:#4CC28A; --warn:#E6A23C; --bad:#F27A6E; --info:#7FA8F0; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+img{max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;margin-right:auto;min-width:0}
+.brand h1{font-family:var(--f-display);font-weight:600;font-size:1.5rem;line-height:1.2;margin:0;letter-spacing:.01em}
+.brand span{color:var(--muted);font-size:.85rem}
+.demo{display:inline-block;font-family:var(--f-body);font-size:.72rem;font-weight:600;letter-spacing:.06em;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 6px;margin-left:8px;vertical-align:middle}
+.search{position:relative;flex:1 1 240px;max-width:340px}
+.search input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.12);overflow:hidden}
+.results button{display:flex;gap:10px;width:100%;text-align:left;padding:9px 12px;border:0;background:none;align-items:center}
+.results button:hover,.results button:focus-visible{background:var(--accent-soft)}
+.results .empty{padding:10px 12px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:500}
+.btn.dark{border-color:var(--ink);background:var(--ink);color:var(--bg);font-weight:600}
+.btn.on{border-color:var(--accent);color:var(--accent)}
+.badge{min-width:22px;height:22px;border-radius:11px;background:var(--accent);color:var(--accent-ink);font-size:.8rem;display:inline-grid;place-items:center;padding:0 6px;font-variant-numeric:tabular-nums}
+.banner{border:1px solid var(--warn);background:var(--surface);border-radius:10px;padding:10px 14px;font-size:.88rem}
+
+.vehicle{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.vehicle .model{font-family:var(--f-display);font-weight:500;font-size:1.05rem}
+.vehicle label{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
+select,.field input,.field textarea{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.board{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.tabs{display:flex;gap:4px;padding:10px 10px 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{border:0;background:none;padding:9px 14px;border-bottom:3px solid transparent;color:var(--muted);font-weight:500;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab small{font-family:var(--f-mono);font-size:.75rem;margin-left:6px;color:var(--muted)}
+
+.stage{position:relative;height:clamp(360px,60vh,580px);background:radial-gradient(ellipse 80% 70% at 50% 35%,var(--stage-a),var(--stage-b));touch-action:none;overflow:hidden;cursor:grab}
+.stage:active{cursor:grabbing}
+.stage.placing{cursor:crosshair}
+.stage canvas{display:block;width:100%;height:100%}
+.stage .msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);text-align:center;padding:20px}
+.hs{position:absolute;left:0;top:0;--x:-100px;--y:-100px;--k:1;transform:translate(var(--x),var(--y)) translate(-50%,-50%) scale(var(--k));width:30px;height:30px;border-radius:50%;border:2px solid #fff;background:#16202A;color:#fff;font-family:var(--f-mono);font-size:.68rem;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:opacity .2s,background .15s}
+.hs:hover{--k:1.12}
+.hs.on{background:var(--accent);color:var(--accent-ink);--k:1.2;z-index:2}
+.hs.on::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--accent);opacity:.5;animation:ping 1.6s ease-out infinite}
+.hs.back{opacity:.25}
+.hs.nofit{background:#7d8893}
+.stage.placing .hs{pointer-events:none;opacity:.5}
+@keyframes ping{from{transform:scale(.8);opacity:.7}to{transform:scale(1.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.hs.on::after{animation:none}}
+.gesture{position:absolute;left:12px;bottom:10px;font-size:.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:3px 8px;pointer-events:none}
+.deg{position:absolute;right:12px;bottom:10px;font-family:var(--f-mono);font-size:.78rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:3px 8px;pointer-events:none;font-variant-numeric:tabular-nums}
+.placebar{position:absolute;left:12px;right:12px;top:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 8px 8px 14px;font-size:.88rem;z-index:3}
+.placebar button{border:0;border-radius:6px;padding:5px 10px;background:var(--bg);color:var(--ink)}
+
+.tools{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.grp{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.grp > span{color:var(--muted);font-size:.8rem;margin-right:4px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:4px 10px;font-size:.85rem;white-space:nowrap}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.sw{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);padding:0}
+.sw[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--surface) inset}
+
+.list{display:flex;flex-direction:column;padding:8px 10px 12px;border-top:1px solid var(--line)}
+.list .empty{padding:18px 6px;color:var(--muted)}
+.row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 6px;border:0;border-top:1px solid var(--line);background:none;text-align:left}
+.row:first-child{border-top:0}
+.row:hover{background:var(--bg)}
+.row.on{background:var(--accent-soft)}
+.code{font-family:var(--f-mono);font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px;text-align:center}
+.row .nm{min-width:0}
+.row .nm b{font-weight:500;display:block}
+.row .nm span{font-size:.8rem}
+.price{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.tag{font-size:.72rem;border:1px dashed var(--warn);color:var(--warn);border-radius:4px;padding:0 5px;margin-left:6px}
+
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:900px){.sheet{position:static}}
+.sheet .empty{color:var(--muted);text-align:center;padding:30px 6px}
+.sheet .empty strong{display:block;font-family:var(--f-display);font-weight:500;color:var(--ink);font-size:1.1rem;margin-bottom:4px}
+.pic{aspect-ratio:16/10;max-width:100%;border-radius:8px;background:var(--bg);border:1px dashed var(--line);display:grid;place-items:center;color:var(--muted)}
+.pic svg{width:42%;height:auto}
+h2.t{font-family:var(--f-display);font-weight:500;font-size:1.3rem;line-height:1.3;margin:0;text-wrap:balance}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:.88rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.mono{font-family:var(--f-mono);font-size:.82rem}
+.stock{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:500}
+.stock::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.s-ok{color:var(--ok)}.s-low{color:var(--warn)}.s-order{color:var(--muted)}.s-bad{color:var(--bad)}
+.big{font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums;font-family:var(--f-display)}
+.buy{display:flex;gap:10px;align-items:center}
+.qty{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.qty button{border:0;background:var(--bg);width:36px;height:40px;font-size:1.1rem}
+.qty output{width:40px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.primary{flex:1;min-height:42px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:600;padding:0 14px}
+.primary:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.note{font-size:.8rem;color:var(--muted)}
+.err{color:var(--bad);font-size:.85rem;margin:0}
+.adminline{display:flex;gap:8px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:12px}
+
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:50;display:flex;flex-direction:column;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-right:calc(18px + env(safe-area-inset-right,0px));padding-left:18px;gap:12px;box-shadow:-12px 0 32px rgba(0,0,0,.18)}
+.scrim{position:fixed;inset:0;background:rgba(10,15,20,.4);z-index:40}
+.drawer h2{font-family:var(--f-display);font-weight:500;margin:0;font-size:1.25rem;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.x{border:0;background:var(--bg);border-radius:6px;width:34px;height:34px;font-size:1.1rem;flex:none}
+.dbody{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;min-height:0}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item .sub{color:var(--muted);font-size:.8rem}
+.item .ctl{display:flex;gap:6px;align-items:center;font-size:.85rem}
+.item .ctl button{border:1px solid var(--line);background:var(--bg);border-radius:5px;width:26px;height:26px}
+.linkbtn{border:0;background:none;color:var(--bad);font-size:.8rem;padding:0}
+.total{display:flex;justify-content:space-between;align-items:baseline;font-weight:600;border-top:2px solid var(--ink);padding-top:10px}
+.dfoot{display:flex;flex-direction:column;gap:8px}
+.ghost{border:1px solid var(--line);background:var(--bg);border-radius:8px;min-height:40px;padding:0 14px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.85rem}
+.field > span{color:var(--muted)}
+.field input,.field textarea,.field select{width:100%}
+.seg{display:flex;gap:6px}
+.seg label{flex:1;display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.seg input{accent-color:var(--accent)}
+.qrbox{background:#fff;color:#111;border-radius:10px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid var(--line);text-align:center}
+.okmark{font-family:var(--f-display);font-size:1.15rem;color:var(--ok)}
+pre.ordertext{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-family:var(--f-body);font-size:.85rem;margin:0;overflow-wrap:anywhere}
+.pill{display:inline-block;font-size:.75rem;font-weight:600;border-radius:99px;padding:1px 9px;border:1px solid currentColor}
+.st-new{color:var(--info)}.st-confirmed{color:var(--warn)}.st-shipped{color:var(--ok)}.st-cancelled{color:var(--muted)}
+
+.office{display:flex;flex-direction:column;gap:14px}
+.office .tabs{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 6px 0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h3{font-family:var(--f-display);font-weight:500;margin:0;font-size:1.1rem}
+.cols{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:500;font-size:.8rem}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.pick{cursor:pointer}
+tr.pick:hover{background:var(--bg)}
+tr.on{background:var(--accent-soft)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.formbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.danger{border:1px solid var(--bad);color:var(--bad);background:none;border-radius:8px;min-height:40px;padding:0 14px}
+.danger.armed{background:var(--bad);color:var(--surface)}
+.orders{display:flex;flex-direction:column;gap:10px}
+.order{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.order.s-new-b{border-left:4px solid var(--info)}
+.order .top{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:baseline}
+.order .top b{font-family:var(--f-mono);font-size:.85rem}
+.order ul{margin:0;padding-left:18px;font-size:.88rem}
+.stbtns,.filter{display:flex;gap:6px;flex-wrap:wrap}
+.login{max-width:400px;margin:20px auto;width:100%}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:60;font-size:.9rem;max-width:calc(100% - 32px);text-align:center}
+footer{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;color:var(--muted);font-size:.8rem}
+footer button{border:0;background:none;color:var(--muted);text-decoration:underline;padding:0;font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1><span id="shopName">อะไหล่ Fortuner 2022</span><span class="demo" id="demoTag" hidden>DEMO</span></h1>
+      <span id="shopSub">ลากหมุนรถดูรอบคัน 360° แล้วกดจุดเพื่อดูอะไหล่</span>
+    </div>
+    <div class="search" id="searchBox">
+      <input id="q" type="search" placeholder="ค้นหาชื่อหรือรหัส เช่น ไฟหน้า, กรอง" autocomplete="off" aria-label="ค้นหาอะไหล่">
+      <div class="results" id="results" hidden></div>
+    </div>
+    <button class="btn" id="officeBtn" type="button" hidden><span id="officeLabel">หลังร้าน</span> <span class="badge" id="newCount" hidden>0</span></button>
+    <button class="btn dark" id="openCart" type="button">ตะกร้า <span class="badge" id="count">0</span></button>
+  </header>
+
+  <div class="banner" id="setupBanner" hidden>ยังไม่ได้เชื่อมฐานข้อมูล หน้านี้กำลังแสดงข้อมูลตัวอย่าง ใส่ค่า Supabase ในไฟล์ <span class="mono">config.js</span> ตามคู่มือ แล้วอัปโหลดขึ้น GitHub อีกครั้ง</div>
+
+  <div id="shopView" class="wrap" style="padding:0;max-width:none">
+    <section class="vehicle" aria-label="รถของคุณ">
+      <span class="model">Toyota Fortuner · ปี 2022</span>
+      <label for="grade">รุ่นย่อย
+        <select id="grade"><option value="std">มาตรฐาน (2.4 V / 2.8 V)</option><option value="leg">Legender</option><option value="grs">GR Sport</option></select>
+      </label>
+      <label for="engine">เครื่องยนต์
+        <select id="engine"><option value="2.8">ดีเซล 2.8 ลิตร</option><option value="2.4">ดีเซล 2.4 ลิตร</option></select>
+      </label>
+    </section>
+    <div class="main">
+      <section class="board">
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div class="stage" id="stage">
+          <div id="spots"></div>
+          <div class="placebar" id="placebar" hidden><span id="placeText"></span><button type="button" id="placeCancel">ยกเลิก</button></div>
+          <div class="gesture">ลากเพื่อหมุน · ซูมด้วยล้อเมาส์หรือสองนิ้ว</div>
+          <div class="deg" id="deg">0°</div>
+        </div>
+        <div class="tools">
+          <div class="grp" id="views"><span>มุมมอง</span>
+            <button class="chip" type="button" data-view="front">หน้า</button>
+            <button class="chip" type="button" data-view="q">มุมเฉียง</button>
+            <button class="chip" type="button" data-view="side">ข้าง</button>
+            <button class="chip" type="button" data-view="rear">หลัง</button>
+            <button class="chip" type="button" data-view="top">บน</button>
+            <button class="chip" type="button" id="spin" aria-pressed="true">หมุนอัตโนมัติ</button>
+          </div>
+          <div class="grp" id="paints"><span>สีรถ</span></div>
+        </div>
+        <div class="list" id="list"></div>
+      </section>
+      <aside class="sheet" id="sheet" aria-live="polite"></aside>
+    </div>
+  </div>
+
+  <div id="officeView" class="office" hidden>
+    <div class="tabs" role="tablist" id="otabs">
+      <button class="tab" role="tab" type="button" data-o="orders">ออเดอร์</button>
+      <button class="tab" role="tab" type="button" data-o="products">สินค้า & สต็อก</button>
+      <button class="tab" role="tab" type="button" data-o="settings">ตั้งค่าร้าน</button>
+    </div>
+    <div id="opanel"></div>
+  </div>
+
+  <footer>
+    <span>โมเดลรถเป็นแบบจำลองเพื่อแสดงตำแหน่งอะไหล่ ไม่ใช่ภาพถ่ายรถจริง</span>
+    <button type="button" id="ownerLink">สำหรับเจ้าของร้าน</button>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="ตะกร้าสินค้า">
+  <h2><span id="dTitle">ตะกร้าสินค้า</span><button class="x" id="closeCart" type="button" aria-label="ปิด">✕</button></h2>
+  <div class="dbody" id="dbody"></div>
+  <div class="dfoot" id="dfoot"></div>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script src="/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ================= constants & helpers ================= */
+const CATS=[{id:"ext",name:"ภายนอก & ไฟ"},{id:"engine",name:"เครื่องยนต์"},{id:"chassis",name:"ช่วงล่าง & เบรก"}];
+const ICON={
+  lamp:'<path d="M10 40 L60 30 L56 60 L10 66 Z"/><path d="M68 36 L90 32 M68 46 L92 46 M68 56 L90 60"/>',
+  grille:'<rect x="8" y="22" width="84" height="56" rx="8"/><path d="M8 38H92M8 50H92M8 62H92"/>',
+  bumper:'<path d="M6 40 Q50 22 94 40 L92 66 Q50 78 8 66 Z"/><path d="M30 56 H70"/>',
+  mirror:'<path d="M14 30 Q50 18 84 30 L80 64 Q50 72 18 64 Z"/><path d="M50 70 V86"/>',
+  handle:'<rect x="12" y="40" width="76" height="20" rx="10"/>',
+  rail:'<path d="M6 40 H94 M18 40 V60 M50 40 V60 M82 40 V60"/>',
+  wiper:'<path d="M10 80 Q50 20 90 22"/><path d="M14 74 L22 80"/>',
+  filter:'<rect x="20" y="20" width="60" height="60" rx="10"/><path d="M32 20V80M44 20V80M56 20V80M68 20V80"/>',
+  battery:'<rect x="12" y="30" width="76" height="50" rx="5"/><path d="M26 22 V30 M74 22 V30 M24 50 H36 M64 50 H76 M70 44 V56"/>',
+  radiator:'<rect x="14" y="16" width="72" height="68" rx="4"/><path d="M26 16V84M38 16V84M50 16V84M62 16V84M74 16V84"/>',
+  belt:'<circle cx="30" cy="50" r="16"/><circle cx="72" cy="36" r="12"/><circle cx="72" cy="70" r="10"/><path d="M30 34 L72 24 M86 36 L82 70 M64 78 L30 66"/>',
+  clutch:'<circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="12"/><path d="M50 14V38M50 62V86M14 50H38M62 50H86"/>',
+  disc:'<circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="14"/><circle cx="50" cy="26" r="2"/><circle cx="74" cy="50" r="2"/><circle cx="50" cy="74" r="2"/><circle cx="26" cy="50" r="2"/>',
+  pad:'<path d="M14 36 Q50 20 86 36 L80 64 Q50 54 20 64 Z"/>',
+  shock:'<path d="M50 6 V22 M38 22 H62 V54 H38 Z M44 54 V94 M56 54 V94 M38 94 H62"/><path d="M30 60 L70 64 M30 70 L70 74 M30 80 L70 84"/>',
+  tyre:'<circle cx="50" cy="50" r="40"/><circle cx="50" cy="50" r="22"/>',
+  joint:'<circle cx="34" cy="60" r="18"/><path d="M48 48 L80 20"/><circle cx="80" cy="20" r="6"/>',
+  shaft:'<path d="M6 50 H94"/><rect x="12" y="40" width="14" height="20"/><rect x="74" y="40" width="14" height="20"/>',
+  box:'<path d="M14 32 L50 16 L86 32 L86 70 L50 86 L14 70 Z"/><path d="M14 32 L50 48 L86 32 M50 48 V86"/>'
+};
+const ICON_NAME={box:"ทั่วไป",lamp:"ไฟ",grille:"กระจัง",bumper:"กันชน",mirror:"กระจก",handle:"มือจับ",rail:"ราวหลังคา",wiper:"ใบปัด",filter:"ไส้กรอง",battery:"แบตเตอรี่",radiator:"หม้อน้ำ",belt:"สายพาน",clutch:"คลัตช์",disc:"จานเบรก",pad:"ผ้าเบรก",shock:"โช้ค",tyre:"ยาง",joint:"ลูกหมาก",shaft:"เพลา"};
+const GRADE_NAME={std:"มาตรฐาน",leg:"Legender",grs:"GR Sport"};
+const STATUS={new:"ใหม่",confirmed:"ยืนยันแล้ว",shipped:"ส่งแล้ว",cancelled:"ยกเลิก"};
+const PAINTS=[["ขาวมุก",0xe9ecef],["ดำ",0x0c0e11],["เงิน",0xa3a9af],["เทาเข้ม",0x41474e],["น้ำตาลแอตติจูด",0x4a3a2e],["แดง",0x7c1416]];
+const sc=0.0055,X=x=>(x-500)*sc,Y=y=>(420-y)*sc;
+
+// Sample data used only when the database is not connected yet
+const SAMPLE=[
+  ["E1","ext",[82,258,.6],[-1,0,.4],"ไฟหน้า LED ข้างซ้าย","FT22-HL-L",18500,4,{leg:24900},[],0,"Legender ใช้โคมทรงบาง แยกรหัสกับรุ่นมาตรฐาน","lamp"],
+  ["E2","ext",[68,284,0],[-1,0,0],"กระจังหน้า","FT22-GR",9800,2,{leg:14500,grs:12800},[],0,"ลายกระจังต่างกันในแต่ละรุ่นย่อย","grille"],
+  ["E3","ext",[78,328,.45],[-1,0,.2],"กันชนหน้า (ยังไม่ทำสี)","FT22-BF",7900,0,{},[],0,"","bumper"],
+  ["E4","ext",[352,212,1.0],[0,.25,1],"กระจกมองข้าง ปรับและพับไฟฟ้า","FT22-MR-R",6200,6,{},[],0,"","mirror"],
+  ["E5","ext",[500,240,.9],[0,0,1],"มือจับประตูด้านนอก หน้าขวา","FT22-DH-FR",1450,12,{},[],0,"","handle"],
+  ["E6","ext",[930,248,.72],[1,0,.4],"ไฟท้าย LED ข้างขวา","FT22-TL-R",8900,3,{},[],0,"","lamp"],
+  ["E7","ext",[640,92,.58],[0,1,.2],"ราวหลังคา","FT22-RR",4500,5,{},[],0,"","rail"],
+  ["E8","ext",[330,220,.3],[-.7,1,0],"ใบปัดน้ำฝนหน้า 26\"/16\" (คู่)","FT22-WB",690,30,{},[],0,"","wiper"],
+  ["G1","engine",[228,240,.35],null,"ไส้กรองอากาศ","FT22-AF",650,24,{},[],0,"","filter"],
+  ["G2","engine",[200,318,-.25],null,"ไส้กรองน้ำมันเครื่อง","FT22-OF",280,40,{},[],0,"","filter"],
+  ["G3","engine",[292,238,.55],null,"แบตเตอรี่ 12V 80Ah","FT22-BT",4200,8,{},[],0,"","battery"],
+  ["G4","engine",[96,280,0],null,"หม้อน้ำ","FT22-RD",7800,1,{},[],0,"","radiator"],
+  ["G5","engine",[140,292,.45],null,"สายพานหน้าเครื่อง","FT22-BL",1250,10,{},[],1,"","belt"],
+  ["G6","engine",[272,288,-.5],null,"ไส้กรองโซล่า","FT22-FF",850,15,{},[],0,"","filter"],
+  ["G7","engine",[400,318,0],null,"ชุดคลัตช์ (เฉพาะเกียร์ธรรมดา)","FT22-CL",9500,2,{},["2.4"],0,"มีเฉพาะเครื่อง 2.4 เกียร์ธรรมดา","clutch"],
+  ["C1","chassis",[230,352,.66],null,"จานเบรกหน้า (ข้างละ)","FT22-DR-F",2900,9,{},[],0,"","disc"],
+  ["C2","chassis",[268,322,.64],null,"ผ้าเบรกหน้า (ชุด)","FT22-BP-F",1850,20,{},[],0,"","pad"],
+  ["C3","chassis",[222,286,.58],null,"โช้คอัพหน้า (ข้างละ)","FT22-SA-F",3600,6,{},[],0,"","shock"],
+  ["C4","chassis",[790,286,.58],null,"โช้คอัพหลัง (ข้างละ)","FT22-SA-R",3100,6,{},[],0,"","shock"],
+  ["C5","chassis",[770,404,.9],[0,0,1],"ยาง 265/60R18 (เส้น)","FT22-TY",5400,16,{grs:6900},[],0,"GR Sport ใช้ยาง 265/55R20","tyre"],
+  ["C6","chassis",[808,322,.64],null,"ผ้าเบรกหลัง (ชุด)","FT22-BP-R",1650,0,{},[],0,"","pad"],
+  ["C7","chassis",[188,378,.5],null,"ลูกหมากปีกนกล่าง","FT22-BJ",1200,3,{},[],0,"","joint"],
+  ["C8","chassis",[500,380,0],null,"เพลากลาง (4x4)","FT22-PS",12500,1,{},["2.8"],0,"ระบบขับเคลื่อน 4 ล้อ มากับเครื่อง 2.8","shaft"]
+].map(([code,cat,at,n,name,pn,price,stock,byGrade,engines,engPn,note,icon])=>({id:"s-"+code,code,cat,name,pn,price,stock,byGrade,engines,engPn:!!engPn,note,icon,pos:[X(at[0]),Y(at[1]),at[2]],n}));
+
+const CFG=window.SHOP_CONFIG||{};
+const LIVE=!!(window.supabase&&CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/xxxx|ใส่/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
+const sb=LIVE?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+
+const S={view:"shop",cat:"ext",sel:null,qty:1,grade:"std",engine:"2.8",cart:{},
+  parts:[],partsReady:false,loadErr:false,shop:{},orders:[],
+  isAdmin:false,email:"",dmode:"cart",lastOrder:null,placing:null,otab:"orders",editId:null,ofilter:"open",myStatus:{}};
+const ls={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+S.cart=ls.get("ft22cart",{});if(typeof S.cart!=="object")S.cart={};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const baht=n=>(Number(n)||0).toLocaleString("th-TH")+" บาท";
+const find=id=>S.parts.find(p=>p.id===id);
+const priceOf=p=>(p.byGrade&&Number(p.byGrade[S.grade]))||Number(p.price)||0;
+const fits=p=>!p.engines||!p.engines.length||p.engines.includes(S.engine);
+const pnOf=p=>(p.pn||"")+(p.byGrade&&p.byGrade[S.grade]!=null?"-"+S.grade.toUpperCase():"")+(p.engPn?"-"+S.engine.replace(".",""):"");
+function stockOf(p){
+  if(!fits(p))return ["s-bad","ไม่ตรงกับรถที่เลือก"];
+  const st=Number(p.stock)||0;
+  if(st<=0)return ["s-order","สั่งจอง 7–10 วัน"];
+  if(st<=3)return ["s-low","เหลือ "+st+" ชิ้น"];
+  return ["s-ok","มีของ พร้อมส่ง"];
+}
+const fmtTime=iso=>{try{return new Date(iso).toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"})}catch(e){return iso}};
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,3000)}
+const fromRow=r=>({id:r.id,code:r.code,cat:r.cat,name:r.name,pn:r.pn||"",price:r.price,stock:r.stock,byGrade:r.by_grade||{},engines:r.engines||[],engPn:!!r.eng_pn,note:r.note||"",icon:r.icon||"box",pos:r.pos,n:r.n});
+const ERR_TH={"invalid customer":"กรอกชื่อและเบอร์โทรให้ครบ","part not found":"มีอะไหล่ในตะกร้าที่ร้านลบไปแล้ว ลบออกแล้วลองใหม่","part does not fit":"มีอะไหล่ที่ไม่ตรงกับเครื่องยนต์ที่เลือก","invalid qty":"จำนวนสินค้าไม่ถูกต้อง","busy":"มีคำสั่งซื้อเข้ามามาก รอสักครู่แล้วลองใหม่"};
+const errText=e=>{const m=String(e?.message||e||"");for(const k in ERR_TH)if(m.includes(k))return ERR_TH[k];return /fetch|network/i.test(m)?"เชื่อมต่ออินเทอร์เน็ตไม่ได้ ลองใหม่อีกครั้ง":"เกิดข้อผิดพลาด ลองใหม่อีกครั้ง"};
+
+/* PromptPay (EMVCo) payload with amount */
+function crc16(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++){c=(c&0x8000)?((c<<1)^0x1021):(c<<1);c&=0xFFFF}}return c.toString(16).toUpperCase().padStart(4,"0")}
+function ppPayload(id,amount){
+  let t=String(id||"").replace(/\D/g,"");if(t.length<9)return null;
+  let tag;if(t.length===15)tag="03";else if(t.length===13)tag="02";else{tag="01";t=("0000000000000"+t.replace(/^0/,"66")).slice(-13)}
+  const f=(k,v)=>k+String(v.length).padStart(2,"0")+v;
+  const p=f("00","01")+f("01",amount?"12":"11")+f("29",f("00","A000000677010111")+f(tag,t))+f("58","TH")+f("53","764")+(amount?f("54",amount.toFixed(2)):"")+"6304";
+  return p+crc16(p);
+}
+
+/* ================= 3D studio turntable ================= */
+const G={ok:false,spots:[]};
+const W=1.855,CW=1.58,XF=X(66),XR=X(936);
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const plan=x=>{const d=Math.min(x-XF,XR-x),t=clamp01(1-d/.5);return 1-.17*t*t};
+const sideL=y=>1-.05*clamp01((y-.8)/.42)-.06*clamp01((.52-y)/.12);
+const sideC=y=>1-.16*clamp01((y-Y(224))/(Y(100)-Y(224)));
+const hwL=(x,y)=>W/2*plan(x)*sideL(y), hwC=(x,y)=>CW/2*plan(x)*sideC(y);
+
+function init3D(){
+  const stage=$("stage");
+  if(!window.THREE||!THREE.OrbitControls||!THREE.BufferGeometryUtils){stage.insertAdjacentHTML("beforeend",'<div class="msg">โหลดตัวแสดงผล 3D ไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</div>');return}
+  let renderer;
+  try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){stage.insertAdjacentHTML("beforeend",'<div class="msg">อุปกรณ์นี้ไม่รองรับ 3D เลือกอะไหล่จากรายการด้านล่างได้</div>');return}
+  const mobile=Math.min(innerWidth,innerHeight)<700;
+  renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.75:2));
+  renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  stage.prepend(renderer.domElement);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(28,1,.1,100);camera.position.set(-6.6,2.4,7.6);
+  const controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.target.set(0,.82,0);controls.enableDamping=true;controls.dampingFactor=.08;controls.enablePan=false;
+  controls.minDistance=5;controls.maxDistance=16;controls.maxPolarAngle=1.52;controls.autoRotate=true;controls.autoRotateSpeed=1.2;
+
+  const pmrem=new THREE.PMREMGenerator(renderer),env=new THREE.Scene();
+  const skyC=document.createElement("canvas");skyC.width=16;skyC.height=256;const sx=skyC.getContext("2d");
+  const gr=sx.createLinearGradient(0,0,0,256);gr.addColorStop(0,"#dfe5ec");gr.addColorStop(.48,"#9aa5b1");gr.addColorStop(.52,"#3a4048");gr.addColorStop(1,"#15181c");sx.fillStyle=gr;sx.fillRect(0,0,16,256);
+  const skyT=new THREE.CanvasTexture(skyC);skyT.encoding=THREE.sRGBEncoding;
+  env.add(new THREE.Mesh(new THREE.SphereGeometry(30,32,16),new THREE.MeshBasicMaterial({map:skyT,side:THREE.BackSide})));
+  const softbox=(w,h,p,c)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(c,c,c),side:THREE.DoubleSide}));m.position.set(...p);m.lookAt(0,1,0);env.add(m)};
+  softbox(16,3,[0,14,0],6);softbox(3,10,[14,6,4],3.2);softbox(3,10,[-14,6,-4],2.6);softbox(10,2.5,[-4,5,14],2.2);softbox(10,2.5,[4,5,-14],1.8);
+  scene.environment=pmrem.fromScene(env,.03).texture;
+  scene.add(new THREE.HemisphereLight(0xffffff,0x3a4450,.45));
+  const key=new THREE.DirectionalLight(0xffffff,1.7);key.position.set(3,10,6);key.castShadow=true;
+  key.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);Object.assign(key.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:1,far:30});key.shadow.radius=5;key.shadow.bias=-.0005;scene.add(key);
+  const rimL=new THREE.DirectionalLight(0xcfe0ff,.6);rimL.position.set(-6,4,-6);scene.add(rimL);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.ShadowMaterial({opacity:.32}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+  const aoC=document.createElement("canvas");aoC.width=aoC.height=128;const ax=aoC.getContext("2d");
+  const rg=ax.createRadialGradient(64,64,4,64,64,64);rg.addColorStop(0,"rgba(0,0,0,.55)");rg.addColorStop(1,"rgba(0,0,0,0)");ax.fillStyle=rg;ax.fillRect(0,0,128,128);
+  const ao=new THREE.Mesh(new THREE.PlaneGeometry(5.6,2.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(aoC),transparent:true,depthWrite:false}));ao.rotation.x=-Math.PI/2;ao.position.y=.003;scene.add(ao);
+
+  const M={
+    paint:new THREE.MeshPhysicalMaterial({color:PAINTS[0][1],metalness:.35,roughness:.28,clearcoat:1,clearcoatRoughness:.04,envMapIntensity:1.1}),
+    glass:new THREE.MeshPhysicalMaterial({color:0x0a1016,metalness:.1,roughness:.02,clearcoat:1,envMapIntensity:1.6}),
+    black:new THREE.MeshPhysicalMaterial({color:0x0d0f12,metalness:.2,roughness:.18,clearcoat:.8}),
+    trim:new THREE.MeshStandardMaterial({color:0x17191c,roughness:.7,metalness:.05}),
+    chrome:new THREE.MeshStandardMaterial({color:0xe6eaee,metalness:1,roughness:.08,envMapIntensity:1.4}),
+    satin:new THREE.MeshStandardMaterial({color:0xb8bec4,metalness:.9,roughness:.3}),
+    rubber:new THREE.MeshStandardMaterial({color:0x111214,roughness:.95,side:THREE.DoubleSide}),
+    alloy:new THREE.MeshStandardMaterial({color:0xc9ced3,metalness:.95,roughness:.22}),
+    barrel:new THREE.MeshStandardMaterial({color:0x2e3237,metalness:.7,roughness:.45}),
+    disc:new THREE.MeshStandardMaterial({color:0x6b7076,metalness:.9,roughness:.35}),
+    head:new THREE.MeshPhysicalMaterial({color:0x1b2026,metalness:.6,roughness:.05,clearcoat:1}),
+    led:new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xdfeaff,emissiveIntensity:1.6}),
+    tail:new THREE.MeshPhysicalMaterial({color:0x5a0608,emissive:0x7a0a0a,emissiveIntensity:.7,roughness:.1,clearcoat:1}),
+    amber:new THREE.MeshStandardMaterial({color:0xff8a1f,emissive:0xff7a00,emissiveIntensity:.8}),
+    part:new THREE.MeshStandardMaterial({color:0xd4500f,roughness:.45,metalness:.3}),
+    steel:new THREE.MeshStandardMaterial({color:0x7a858f,roughness:.4,metalness:.8})
+  };
+  const car=new THREE.Group();scene.add(car);
+  const add=(geo,mat,x,y,z,ry,rz,rx)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(ry)m.rotation.y=ry;if(rz)m.rotation.z=rz;m.castShadow=true;car.add(m);return m};
+  const beam=(a,b,w,d,mat)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b);const m=new THREE.Mesh(new THREE.BoxGeometry(w,A.distanceTo(B),d),mat);
+    m.position.copy(A).add(B).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),B.clone().sub(A).normalize());m.castShadow=true;car.add(m);return m};
+  const sL=(x,y,s,o=.004)=>[X(x),Y(y),s*(hwL(X(x),Y(y))+o)], sC=(x,y,s,o=.004)=>[X(x),Y(y),s*(hwC(X(x),Y(y))+o)];
+  function panel(shape,width,bt,bs,sculpt){
+    const pts=shape.getSpacedPoints(420);pts.pop();
+    let g=new THREE.ExtrudeGeometry(new THREE.Shape(pts),{depth:width-2*bt,steps:12,bevelEnabled:true,bevelThickness:bt,bevelSize:bs,bevelSegments:7,curveSegments:4});
+    g.translate(0,0,-(width-2*bt)/2);g.deleteAttribute("normal");g.deleteAttribute("uv");
+    g=THREE.BufferGeometryUtils.mergeVertices(g,1e-4);
+    const p=g.attributes.position;for(let i=0;i<p.count;i++){const v=sculpt(p.getX(i),p.getY(i),p.getZ(i));p.setXYZ(i,v[0],v[1],v[2])}
+    g.computeVertexNormals();return g;
+  }
+  const arch=(sh,cx)=>{const r=82*sc,cy=Y(352),a=Math.asin((Y(345)-cy)/r);sh.absarc(X(cx),cy,r,a,Math.PI-a,false)};
+  const lo=new THREE.Shape();
+  lo.moveTo(X(96),Y(345));lo.lineTo(X(80),Y(334));lo.quadraticCurveTo(X(68),Y(320),X(67),Y(300));lo.lineTo(X(68),Y(272));
+  lo.quadraticCurveTo(X(70),Y(252),X(98),Y(248));lo.lineTo(X(222),Y(234));lo.lineTo(X(330),Y(222));lo.lineTo(X(690),Y(214));
+  lo.quadraticCurveTo(X(706),Y(213),X(716),Y(206));lo.lineTo(X(735),Y(200));lo.lineTo(X(902),Y(198));lo.quadraticCurveTo(X(922),Y(199),X(925),Y(214));
+  lo.lineTo(X(932),Y(252));lo.lineTo(X(936),Y(300));lo.quadraticCurveTo(X(936),Y(338),X(914),Y(345));lo.lineTo(X(852),Y(345));
+  arch(lo,770);lo.lineTo(X(312),Y(345));arch(lo,230);lo.lineTo(X(96),Y(345));
+  const hoodY=x=>Y(248)+(Y(222)-Y(248))*(x-X(98))/(X(330)-X(98));
+  add(panel(lo,W,.11,.055,(x,y,z)=>{const zn=z/(W/2);
+    if(x>X(98)&&x<X(330)&&y>hoodY(x)-.035)y+=.03*(1-zn*zn)*clamp01((x-X(98))/.25);
+    return [x,y,z*plan(x)*sideL(y)]}),M.paint,0,0,0);
+  const cab=new THREE.Shape();
+  cab.moveTo(X(322),Y(226));cab.lineTo(X(424),Y(116));cab.quadraticCurveTo(X(436),Y(104),X(458),Y(103));
+  cab.lineTo(X(820),Y(100));cab.quadraticCurveTo(X(866),Y(101),X(882),Y(116));cab.lineTo(X(917),Y(206));
+  cab.lineTo(X(735),Y(206));cab.lineTo(X(714),Y(212));cab.lineTo(X(690),Y(220));cab.lineTo(X(322),Y(226));
+  add(panel(cab,CW,.07,.025,(x,y,z)=>[x,y,z*plan(x)*sideC(y)]),M.glass,0,0,0);
+  const roofW=2*hwC(X(640),Y(100));
+  add(new THREE.BoxGeometry(X(870)-X(442),.045,roofW+.02),M.paint,(X(442)+X(870))/2,Y(100)+.045,0);
+  for(const s of [-1,1]){
+    beam(sC(324,224,s),sC(428,108,s),.1,.03,M.paint);
+    beam(sC(560,104,s),sC(560,218,s),.085,.02,M.black);
+    beam(sC(722,102,s),sC(722,207,s),.12,.02,M.black);
+    beam(sC(878,112,s),sC(915,204,s),.13,.03,M.paint);
+    beam(sC(436,106,s),sC(872,104,s),.05,.02,M.black);
+    const belt=[[332,226],[690,218],[714,210],[735,204],[912,202]];
+    for(let i=0;i<belt.length-1;i++)beam(sL(...belt[i],s,.006),sL(...belt[i+1],s,.006),.018,.008,M.chrome);
+    const seam=(a,b)=>beam(sL(...a,s,.001),sL(...b,s,.001),.007,.004,M.trim);
+    seam([336,228],[336,300]);seam([548,220],[548,338]);seam([722,212],[722,300]);seam([336,338],[690,338]);
+    add(new THREE.BoxGeometry(.15,.028,.035),M.chrome,X(500),Y(240),s*(hwL(X(500),Y(240))+.012));
+    add(new THREE.BoxGeometry(.15,.028,.035),M.chrome,X(670),Y(236),s*(hwL(X(670),Y(236))+.012));
+    const mz=hwL(X(352),Y(214));
+    add(new THREE.BoxGeometry(.08,.05,.1),M.black,X(356),Y(218),s*(mz+.03));
+    add(new THREE.BoxGeometry(.22,.13,.2),M.paint,X(352),Y(210),s*(mz+.14),s*-.12);
+    add(new THREE.BoxGeometry(.012,.02,.16),M.amber,X(352)-.11,Y(214),s*(mz+.15),s*-.12);
+    for(const cx of [230,770]){const f=add(new THREE.TorusGeometry(82*sc+.012,.034,8,48,Math.PI*1.04),M.trim,X(cx),Y(352),s*(hwL(X(cx),Y(300))-.005),0,-.02*Math.PI);f.scale.z=1.5}
+    add(new THREE.BoxGeometry(X(684)-X(316),.04,.17),M.trim,(X(316)+X(684))/2,.335,s*.86);
+    add(new THREE.BoxGeometry(X(684)-X(316),.012,.012),M.satin,(X(316)+X(684))/2,.358,s*.945);
+    add(new THREE.BoxGeometry(.13,.07,.4),M.head,X(84),Y(257),s*.57,s*.5);
+    add(new THREE.BoxGeometry(.02,.012,.34),M.led,X(84)-.06,Y(262),s*.57,s*.5);
+    add(new THREE.CylinderGeometry(.045,.045,.03,20),M.satin,X(72),Y(320),s*.62,0,Math.PI/2);
+    add(new THREE.BoxGeometry(.07,.2,.14),M.tail,X(930),Y(248),s*.76,-s*.42);
+    beam([X(470),Y(100)+.12,s*.56],[X(845),Y(100)+.11,s*.56],.035,.035,M.satin);
+    for(const rx of [480,660,835])add(new THREE.BoxGeometry(.06,.07,.03),M.trim,X(rx),Y(100)+.08,s*.56);
+  }
+  add(new THREE.BoxGeometry(.08,.25,1.04),M.black,X(67)+.015,Y(284),0);
+  for(const gy of [272,286,298])add(new THREE.BoxGeometry(.03,.014,1.0),M.chrome,X(67)-.02,Y(gy),0);
+  add(new THREE.BoxGeometry(.05,.07,.95),M.trim,X(70),Y(322),0);
+  add(new THREE.BoxGeometry(.12,.035,.86),M.satin,X(84),Y(339),0);
+  add(new THREE.BoxGeometry(.04,.13,.46),M.trim,X(936)+.005,Y(270),0);
+  add(new THREE.BoxGeometry(.03,.02,.9),M.chrome,X(932)+.01,Y(234),0);
+  add(new THREE.BoxGeometry(.1,.07,1.5),M.trim,X(932),Y(330),0);
+  add(new THREE.BoxGeometry(.22,.04,1.3),M.paint,X(900),Y(100)+.05,0);
+  add(new THREE.ConeGeometry(.04,.09,4),M.black,X(842),Y(100)+.11,0).scale.set(2.6,1,.5);
+  add(new THREE.BoxGeometry(X(900)-X(100),.12,1.5),M.trim,X(500),.36,0);
+  const tyreG=new THREE.LatheGeometry([[.235,-.125],[.32,-.136],[.362,-.124],[.382,-.085],[.387,0],[.382,.085],[.362,.124],[.32,.136],[.235,.125]].map(([r,y])=>new THREE.Vector2(r,y)),56);
+  const spokeG=new THREE.BoxGeometry(.18,.026,.03),barrelG=new THREE.CylinderGeometry(.238,.238,.2,40,1,true),lipG=new THREE.TorusGeometry(.234,.011,8,56),hubG=new THREE.CylinderGeometry(.065,.065,.03,24),discG=new THREE.CylinderGeometry(.18,.18,.022,40);
+  for(const cx of [230,770])for(const s of [-1,1]){
+    const w=new THREE.Group();w.position.set(X(cx),Y(352),s*.78);w.rotation.y=s>0?0:Math.PI;car.add(w);
+    const m=(g,mat,f)=>{const o=new THREE.Mesh(g,mat);o.castShadow=true;f&&f(o);w.add(o);return o};
+    m(tyreG,M.rubber,o=>o.rotation.x=Math.PI/2);m(barrelG,M.barrel,o=>o.rotation.x=Math.PI/2);
+    m(lipG,M.alloy,o=>o.position.z=.1);m(hubG,M.chrome,o=>{o.rotation.x=Math.PI/2;o.position.z=.105});
+    m(discG,M.disc,o=>{o.rotation.x=Math.PI/2;o.position.z=-.03});m(new THREE.BoxGeometry(.07,.12,.05),M.barrel,o=>{o.position.set(.11,.1,-.01)});
+    for(let i=0;i<6;i++)for(const d of [-.09,.09]){const a=i*Math.PI/3+d;m(spokeG,M.alloy,o=>{o.position.set(Math.cos(a)*.148,Math.sin(a)*.148,.1);o.rotation.z=a})}
+  }
+  const inner={engine:new THREE.Group(),chassis:new THREE.Group()};scene.add(inner.engine,inner.chassis);
+  const ia=(g,geo,mat,x,y,z,rx,rz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;g.add(m);return m};
+  ia(inner.engine,new THREE.BoxGeometry(.75,.36,.7),M.steel,X(230),Y(290),0);
+  ia(inner.engine,new THREE.BoxGeometry(.04,.34,1.2),M.part,X(96),Y(286),0);
+  ia(inner.engine,new THREE.BoxGeometry(.25,.18,.17),M.part,X(292),Y(242),.55);
+  ia(inner.engine,new THREE.BoxGeometry(.3,.12,.26),M.part,X(228),Y(242),.35);
+  ia(inner.engine,new THREE.TorusGeometry(.1,.016,8,24),M.part,X(140),Y(292),.45).rotation.y=Math.PI/2;
+  ia(inner.engine,new THREE.CylinderGeometry(.05,.05,.15,16),M.part,X(272),Y(288),-.5);
+  ia(inner.engine,new THREE.CylinderGeometry(.05,.05,.1,16),M.part,X(200),Y(318),-.25);
+  ia(inner.engine,new THREE.CylinderGeometry(.15,.11,.55,20),M.steel,X(400),Y(318),0,0,Math.PI/2);
+  for(const z of [-.45,.45])ia(inner.chassis,new THREE.BoxGeometry(X(890)-X(110),.11,.07),M.steel,X(500),Y(350),z);
+  for(const cx of [230,770]){
+    ia(inner.chassis,new THREE.CylinderGeometry(.045,.045,1.4,12),M.steel,X(cx),Y(352),0,Math.PI/2);
+    for(const s of [-1,1]){
+      ia(inner.chassis,new THREE.CylinderGeometry(.18,.18,.03,28),M.part,X(cx),Y(352),s*.66,Math.PI/2);
+      ia(inner.chassis,new THREE.CylinderGeometry(.04,.04,.42,12),M.part,X(cx<500?222:790),Y(290),s*.58);
+      ia(inner.chassis,new THREE.BoxGeometry(.1,.08,.05),M.part,X(cx<500?268:808),Y(322),s*.64);
+    }
+  }
+  ia(inner.chassis,new THREE.CylinderGeometry(.035,.035,2.6,12),M.part,X(500),Y(380),0,0,Math.PI/2);
+  ia(inner.chassis,new THREE.SphereGeometry(.05,12,10),M.part,X(188),Y(378),.5);
+
+  const shell=Object.values(M).filter(m=>m!==M.part&&m!==M.steel);
+  function xray(cat){const on=cat!=="ext";
+    for(const m of shell){m.transparent=on;m.opacity=on?((m===M.rubber||m===M.alloy||m===M.barrel||m===M.disc)?.35:.12):1;m.depthWrite=!on;m.needsUpdate=true}
+    inner.engine.visible=cat==="engine";inner.chassis.visible=cat==="chassis"}
+  car.updateMatrixWorld(true);
+  const ray=new THREE.Raycaster();
+  function snap(p){
+    const base=new THREE.Vector3(...p.pos);if(!Array.isArray(p.n))return base;
+    const n=new THREE.Vector3(...p.n).normalize();ray.set(base.clone().addScaledVector(n,3),n.clone().negate());
+    const h=ray.intersectObject(car,true)[0];return h&&h.point.distanceTo(base)<.6?h.point.addScaledVector(n,.015):base;
+  }
+  let fly=null;
+  const stopSpin=()=>{controls.autoRotate=false;$("spin").setAttribute("aria-pressed","false")};
+  function flyTo(dir,dist=8.6){const from=camera.position.clone().sub(controls.target);fly={d0:from.clone().normalize(),d1:dir.clone().normalize(),r0:from.length(),r1:dist,t:0};stopSpin()}
+  controls.addEventListener("start",()=>{fly=null;stopSpin()});
+  // owner: click on the car to place a hotspot
+  const ndc=new THREE.Vector2();let down=null;
+  renderer.domElement.addEventListener("pointerdown",e=>{down=[e.clientX,e.clientY]});
+  renderer.domElement.addEventListener("pointerup",e=>{
+    if(!S.placing||!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;
+    const r=renderer.domElement.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
+    ray.setFromCamera(ndc,camera);
+    const targets=S.cat==="ext"?[car]:[inner[S.cat],car];let hit=null;
+    for(const t of targets){const h=ray.intersectObject(t,true)[0];if(h){hit=h;break}}
+    if(!hit){toast("ไม่โดนตัวรถ ลองคลิกบนชิ้นส่วนอีกครั้ง");return}
+    const n=hit.face?hit.face.normal.clone().transformDirection(hit.object.matrixWorld):null;
+    placeAt(hit.point,S.cat==="ext"&&n?n:null);
+  });
+  const tmp=new THREE.Vector3(),tmp2=new THREE.Vector3();
+  function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+  new ResizeObserver(resize).observe(stage);resize();
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;if(reduce)stopSpin();
+  let lastDeg=-1;
+  function loop(){
+    if(S.view==="shop"&&!document.hidden){
+      if(fly){fly.t=Math.min(1,fly.t+(reduce?1:.032));const e=1-Math.pow(1-fly.t,3);
+        const d=fly.d0.clone().lerp(fly.d1,e);if(d.lengthSq()<1e-4)d.set(0,1,.01);d.normalize();
+        camera.position.copy(controls.target).addScaledVector(d,fly.r0+(fly.r1-fly.r0)*e);if(fly.t>=1)fly=null}
+      controls.update();renderer.render(scene,camera);
+      const deg=Math.round(((Math.atan2(camera.position.x,camera.position.z)*180/Math.PI)+360)%360);if(deg!==lastDeg){$("deg").textContent=deg+"°";lastDeg=deg}
+      const w=stage.clientWidth,h=stage.clientHeight;
+      for(const b of G.spots){tmp.copy(b._p).project(camera);
+        b.style.setProperty("--x",((tmp.x*.5+.5)*w).toFixed(1)+"px");b.style.setProperty("--y",((-tmp.y*.5+.5)*h).toFixed(1)+"px");
+        b.classList.toggle("back",!!b._n&&b._n.dot(tmp2.copy(camera.position).sub(b._p))<0)}
+    }
+    requestAnimationFrame(loop);
+  }
+  Object.assign(G,{ok:true,M,xray,flyTo,controls,snap});loop();
+}
+const VIEWS={front:[-1,.22,.16],q:[-.75,.28,.9],side:[.02,.18,1],rear:[1,.28,.2],top:[.02,1,.02]};
+
+/* ================= shop ================= */
+const catParts=()=>S.parts.filter(p=>p.cat===S.cat);
+function renderHeader(){
+  $("shopName").textContent=S.shop.name||"อะไหล่ Fortuner 2022";
+  document.title=S.shop.name||"อะไหล่ Fortuner 2022";
+  $("demoTag").hidden=LIVE;$("setupBanner").hidden=LIVE;
+  $("officeBtn").hidden=!S.isAdmin;$("officeBtn").classList.toggle("on",S.view==="office");
+  $("officeLabel").textContent=S.view==="office"?"กลับหน้าร้าน":"หลังร้าน";
+  const nNew=S.orders.filter(o=>o.status==="new").length;$("newCount").hidden=!S.isAdmin||!nNew;$("newCount").textContent=nNew;
+  $("searchBox").hidden=S.view!=="shop";$("openCart").hidden=S.view!=="shop";
+  $("shopView").hidden=S.view!=="shop";$("officeView").hidden=S.view!=="office";
+  $("ownerLink").textContent=S.isAdmin?`ออกจากระบบ (${S.email})`:"สำหรับเจ้าของร้าน";
+}
+function renderTabs(){$("tabs").innerHTML=CATS.map(c=>`<button class="tab" role="tab" type="button" aria-selected="${c.id===S.cat}" data-cat="${c.id}">${c.name}<small>${S.parts.filter(p=>p.cat===c.id).length}</small></button>`).join("")}
+function renderStage(){
+  const ps=catParts();
+  $("spots").innerHTML=G.ok?ps.filter(p=>Array.isArray(p.pos)&&p.pos.length===3).map(p=>`<button type="button" class="hs${p.id===S.sel?" on":""}${fits(p)?"":" nofit"}" data-id="${esc(p.id)}" aria-label="${esc(p.code)} ${esc(p.name)}">${esc(p.code)}</button>`).join(""):"";
+  if(G.ok){G.spots=[...$("spots").children];G.spots.forEach(b=>{const p=find(b.dataset.id);const key=JSON.stringify([p.pos,p.n]);if(p._key!==key){p._v=G.snap(p);p._key=key}b._p=p._v;b._n=Array.isArray(p.n)?new THREE.Vector3(...p.n):null});G.xray(S.cat)}
+  const L=$("list");
+  if(!S.partsReady){L.innerHTML=`<div class="empty">กำลังโหลดรายการอะไหล่…</div>`;return}
+  if(S.loadErr){L.innerHTML=`<div class="empty">โหลดรายการอะไหล่ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วรีเฟรชหน้า</div>`;return}
+  if(!ps.length){L.innerHTML=`<div class="empty">ยังไม่มีอะไหล่ในหมวดนี้${S.isAdmin?" · เพิ่มได้ที่ หลังร้าน → สินค้า & สต็อก":""}</div>`;return}
+  L.innerHTML=ps.map(p=>{const [cls,txt]=stockOf(p);
+    return `<button type="button" class="row${p.id===S.sel?" on":""}" data-id="${esc(p.id)}"><span class="code">${esc(p.code)}</span><span class="nm"><b>${esc(p.name)}${S.isAdmin&&!Array.isArray(p.pos)?'<span class="tag">ยังไม่วางจุด</span>':""}</b><span class="${cls}">${txt}</span></span><span class="price">${baht(priceOf(p))}</span></button>`}).join("");
+}
+function renderSheet(){
+  const p=find(S.sel);
+  if(!p){$("sheet").innerHTML=`<div class="empty"><strong>ยังไม่ได้เลือกอะไหล่</strong>กดตัวเลขบนรถ เพื่อดูราคา สต็อก และรุ่นที่ใส่ได้</div>`;return}
+  const [cls,txt]=stockOf(p),ok=fits(p);
+  $("sheet").innerHTML=`
+    <div class="pic"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${ICON[p.icon]||ICON.box}</svg></div>
+    <div><span class="code">${esc(p.code)}</span></div>
+    <h2 class="t">${esc(p.name)}</h2>
+    <dl class="kv"><dt>รหัสอะไหล่</dt><dd class="mono">${esc(pnOf(p))}</dd>
+      <dt>ใส่ได้กับ</dt><dd>Fortuner 2020–2024 · ${GRADE_NAME[S.grade]} · ${p.engines&&p.engines.length?"ดีเซล "+esc(p.engines.join(", ")):"ดีเซล 2.4 / 2.8"}</dd>
+      <dt>สถานะ</dt><dd><span class="stock ${cls}">${txt}</span></dd></dl>
+    ${p.note?`<p class="note" style="margin:0">${esc(p.note)}</p>`:""}
+    <div class="big">${baht(priceOf(p))}</div>
+    <div class="buy"><div class="qty"><button type="button" id="minus" aria-label="ลดจำนวน">−</button><output id="qtyv">${S.qty}</output><button type="button" id="plus" aria-label="เพิ่มจำนวน">+</button></div>
+      <button class="primary" id="add" type="button" ${ok?"":"disabled"}>${ok?((Number(p.stock)||0)<=0?"สั่งจอง":"ใส่ตะกร้า"):"ไม่ตรงรุ่น"}</button></div>
+    ${S.isAdmin?`<div class="adminline"><button class="ghost" type="button" id="placeBtn">${Array.isArray(p.pos)?"ย้ายจุดบนรถ":"วางจุดบนรถ"}</button><button class="ghost" type="button" id="editBtn">แก้ไขสินค้า</button></div>`:""}`;
+}
+function select(id,focus=true){
+  const p=find(id);if(!p)return;S.sel=id;S.qty=1;
+  if(p.cat!==S.cat){S.cat=p.cat;renderTabs()}
+  renderStage();renderSheet();
+  if(G.ok&&focus&&Array.isArray(p.pos)){const d=Array.isArray(p.n)?new THREE.Vector3(...p.n).add(new THREE.Vector3(0,.3,0)):new THREE.Vector3(p.pos[0]<0?-.5:.5,.5,p.pos[2]>=0?1:-1);G.flyTo(d,7.4)}
+}
+function startPlacing(id){const p=find(id);if(!p)return;S.placing=id;if(S.cat!==p.cat){S.cat=p.cat;renderTabs();renderStage()}
+  $("stage").classList.add("placing");$("placebar").hidden=false;$("placeText").textContent=`คลิกบนรถตรงตำแหน่งของ ${p.code} ${p.name}`;$("stage").scrollIntoView({block:"center"})}
+function stopPlacing(){S.placing=null;$("stage").classList.remove("placing");$("placebar").hidden=true}
+async function placeAt(point,normal){
+  const id=S.placing;stopPlacing();const r=v=>Math.round(v*1000)/1000;
+  const pos=[r(point.x),r(point.y),r(point.z)],n=normal?[r(normal.x),r(normal.y),r(normal.z)]:null;
+  const {error}=await sb.from("parts").update({pos,n}).eq("id",id);
+  if(error)return toast("บันทึกตำแหน่งไม่สำเร็จ: "+errText(error));
+  const p=find(id);if(p){p.pos=pos;p.n=n}renderStage();renderSheet();toast("บันทึกตำแหน่งแล้ว");
+}
+
+/* ================= cart & checkout ================= */
+const saveCart=()=>ls.set("ft22cart",S.cart);
+const cartList=()=>Object.entries(S.cart).map(([k,it])=>({k,...it}));
+const cartTotal=()=>cartList().reduce((a,it)=>a+it.q*it.price,0);
+function openDrawer(mode){if(mode)S.dmode=mode;$("drawer").hidden=false;$("scrim").hidden=false;renderDrawer();if(S.dmode==="mine")loadMyStatus()}
+function closeDrawer(){$("drawer").hidden=true;$("scrim").hidden=true;if(["done","fallback"].includes(S.dmode))S.dmode="cart"}
+function contactLine(){return [S.shop.phone?`โทร ${esc(S.shop.phone)}`:"",S.shop.line?`LINE ${esc(S.shop.line)}`:""].filter(Boolean).join(" · ")}
+function renderDrawer(){
+  $("count").textContent=cartList().reduce((a,it)=>a+it.q,0);if($("drawer").hidden)return;
+  const items=cartList(),total=cartTotal(),B=$("dbody"),F=$("dfoot"),codes=ls.get("ft22codes",[]);
+  const mineBtn=LIVE&&codes.length?`<button class="ghost" type="button" data-go="mine">ออเดอร์ของฉัน (${codes.length})</button>`:"";
+  if(S.dmode==="cart"){
+    $("dTitle").textContent="ตะกร้าสินค้า";
+    B.innerHTML=items.length?items.map(it=>`<div class="item"><div><div>${esc(it.name)}</div><div class="sub mono">${esc(it.pn)}</div></div><div class="price">${baht(it.q*it.price)}</div>
+      <div class="ctl"><button type="button" data-k="${esc(it.k)}" data-d="-1" aria-label="ลด">−</button><span>${it.q}</span><button type="button" data-k="${esc(it.k)}" data-d="1" aria-label="เพิ่ม">+</button><button type="button" class="linkbtn" data-k="${esc(it.k)}" data-d="x" style="margin-left:6px">ลบ</button></div></div>`).join("")
+      :`<p class="note">ยังไม่มีสินค้าในตะกร้า เลือกอะไหล่จากรถแล้วกด "ใส่ตะกร้า"</p>`;
+    F.innerHTML=`<div class="total"><span>รวม</span><span class="big">${baht(total)}</span></div><button class="primary" type="button" data-go="form" ${items.length?"":"disabled"}>ไปขั้นตอนสั่งซื้อ</button>${mineBtn}`;
+  }else if(S.dmode==="form"){
+    $("dTitle").textContent="ข้อมูลผู้สั่ง";const sv=ls.get("ft22buyer",{});
+    B.innerHTML=`<form id="orderForm" style="display:flex;flex-direction:column;gap:12px" novalidate>
+      <label class="field"><span>ชื่อ-นามสกุล</span><input id="f_name" maxlength="100" value="${esc(sv.name)}" autocomplete="name"></label>
+      <label class="field"><span>เบอร์โทร</span><input id="f_phone" maxlength="30" inputmode="tel" value="${esc(sv.phone)}" autocomplete="tel"></label>
+      <div class="field"><span>วิธีรับสินค้า</span><div class="seg">
+        <label><input type="radio" name="f_method" id="f_m_ship" value="ship" ${sv.method!=="pickup"?"checked":""}> จัดส่ง</label>
+        <label><input type="radio" name="f_method" id="f_m_pick" value="pickup" ${sv.method==="pickup"?"checked":""}> รับที่ร้าน</label></div></div>
+      <label class="field" id="addrWrap"><span>ที่อยู่จัดส่ง</span><textarea id="f_addr" rows="3" maxlength="400" autocomplete="street-address">${esc(sv.address)}</textarea></label>
+      <label class="field"><span>หมายเหตุ (ถ้ามี) เช่น เลขตัวถัง สีรถ</span><textarea id="f_note" rows="2" maxlength="500"></textarea></label>
+      <p class="err" id="formErr" hidden></p></form>`;
+    F.innerHTML=`<div class="total"><span>ยอดชำระ</span><span class="big">${baht(total)}</span></div><button class="primary" type="submit" form="orderForm" id="submitOrder">ยืนยันสั่งซื้อ</button><button class="ghost" type="button" data-go="cart">กลับไปตะกร้า</button>`;
+    const sync=()=>{$("addrWrap").hidden=$("f_m_pick").checked};B.querySelectorAll('input[name="f_method"]').forEach(r=>r.addEventListener("change",sync));sync();
+    $("orderForm").addEventListener("submit",submitOrder);
+  }else if(S.dmode==="done"||S.dmode==="fallback"){
+    const o=S.lastOrder,ct=contactLine();$("dTitle").textContent=S.dmode==="done"?"สั่งซื้อสำเร็จ":"ส่งออเดอร์ให้ร้าน";
+    B.innerHTML=(S.dmode==="done"?`<div class="okmark">รับออเดอร์ #${esc(o.code)} แล้ว</div><p class="note" style="margin:0">ร้านจะตรวจสอบและยืนยันออเดอร์ ดูสถานะได้ที่ "ออเดอร์ของฉัน"${ct?` · ติดต่อร้าน: ${ct}`:""}</p>`
+      :`<p style="margin:0">นี่คือหน้าตัวอย่าง ยังส่งออเดอร์เข้าระบบไม่ได้ คัดลอกข้อความแล้วส่งให้ร้าน${ct?` (${ct})`:""}</p><pre class="ordertext" id="otext">${esc(orderText(o))}</pre><button class="ghost" type="button" id="copyOrder">คัดลอกข้อความออเดอร์</button>`)
+      +(S.shop.promptpay?`<div class="qrbox"><strong>สแกนจ่ายด้วย PromptPay</strong><div id="qr"></div><span>${baht(o.total)}</span><small>ตรวจชื่อบัญชีร้านในแอปธนาคารก่อนยืนยันโอน แล้วส่งสลิปให้ร้าน</small></div>`:"");
+    F.innerHTML=`<button class="primary" type="button" data-go="close">กลับไปเลือกอะไหล่</button>${S.dmode==="done"?`<button class="ghost" type="button" data-go="mine">ดูออเดอร์ของฉัน</button>`:""}`;
+    if(S.shop.promptpay&&window.QRCode){const pl=ppPayload(S.shop.promptpay,o.total);if(pl)new QRCode($("qr"),{text:pl,width:200,height:200,correctLevel:QRCode.CorrectLevel.M})}
+    const cb=$("copyOrder");if(cb)cb.addEventListener("click",()=>navigator.clipboard.writeText(orderText(o)).then(()=>toast("คัดลอกแล้ว")).catch(()=>{const r=document.createRange();r.selectNodeContents($("otext"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("เลือกข้อความแล้ว กดคัดลอกได้เลย")}));
+  }else if(S.dmode==="mine"){
+    $("dTitle").textContent="ออเดอร์ของฉัน";
+    B.innerHTML=codes.length?[...codes].reverse().map(c=>{const st=S.myStatus[c];
+      return `<div class="order"><div class="top"><b>#${esc(c)}</b>${st?`<span class="pill st-${esc(st.status)}">${STATUS[st.status]||esc(st.status)}</span><span class="note">${fmtTime(st.created_at)}</span><span class="price" style="margin-left:auto">${baht(st.total)}</span>`:`<span class="note">กำลังโหลด…</span>`}</div></div>`}).join("")
+      :`<p class="note">ยังไม่มีออเดอร์จากเครื่องนี้</p>`;
+    F.innerHTML=`<button class="ghost" type="button" data-go="cart">กลับไปตะกร้า</button>`;
+  }
+}
+async function loadMyStatus(){
+  const codes=ls.get("ft22codes",[]);if(!sb||!codes.length)return;
+  const {data}=await sb.rpc("order_status",{p_codes:codes.slice(-20)});
+  (data||[]).forEach(r=>S.myStatus[r.code]=r);if(S.dmode==="mine")renderDrawer();
+}
+function orderText(o){
+  return [`ออเดอร์ #${o.code}`,...o.items.map(i=>`- ${i.code} ${i.name} (${i.pn}) × ${i.q} = ${baht(i.q*i.price)}`),`รวม ${baht(o.total)}`,
+    `ชื่อ: ${o.customer.name}`,`โทร: ${o.customer.phone}`,o.customer.method==="pickup"?"รับที่ร้าน":`จัดส่ง: ${o.customer.address}`,
+    `รถ: Fortuner 2022 · ${GRADE_NAME[o.grade]||""} · ดีเซล ${o.engine}`,o.note?`หมายเหตุ: ${o.note}`:""].filter(Boolean).join("\n");
+}
+let submitting=false;
+async function submitOrder(e){
+  e.preventDefault();if(submitting)return;
+  const name=$("f_name").value.trim(),phone=$("f_phone").value.trim(),method=$("f_m_pick").checked?"pickup":"ship",address=$("f_addr").value.trim(),note=$("f_note").value.trim();
+  const err=m=>{$("formErr").textContent=m;$("formErr").hidden=false};
+  if(!name)return err("กรอกชื่อผู้สั่ง");
+  if(phone.replace(/\D/g,"").length<9)return err("กรอกเบอร์โทรให้ครบ เช่น 0812345678");
+  if(method==="ship"&&address.length<10)return err("กรอกที่อยู่จัดส่งให้ครบ");
+  ls.set("ft22buyer",{name,phone,method,address});
+  const items=cartList(),customer={name,phone,method,address:method==="ship"?address:""};
+  if(!LIVE){S.lastOrder={code:"DEMO-"+Date.now().toString(36).toUpperCase().slice(-5),items:items.map(i=>({code:i.code,name:i.name,pn:i.pn,price:i.price,q:i.q})),total:cartTotal(),customer,note,grade:S.grade,engine:S.engine};S.dmode="fallback";return renderDrawer()}
+  submitting=true;const btn=$("submitOrder");btn.disabled=true;btn.textContent="กำลังส่งออเดอร์…";
+  const {data,error}=await sb.rpc("place_order",{p_items:items.map(i=>({part_id:i.partId,q:i.q})),p_customer:customer,p_note:note,p_grade:S.grade,p_engine:S.engine});
+  submitting=false;
+  if(error){btn.disabled=false;btn.textContent="ยืนยันสั่งซื้อ";return err(errText(error))}
+  S.lastOrder={...data,customer,note,grade:S.grade,engine:S.engine};
+  ls.set("ft22codes",[...ls.get("ft22codes",[]),data.code].slice(-20));
+  S.cart={};saveCart();S.dmode="done";renderDrawer();
+}
+
+/* ================= back office ================= */
+function renderOffice(){
+  if(S.view!=="office")return;const P=$("opanel");
+  $("otabs").hidden=!S.isAdmin;
+  if(!S.isAdmin){
+    P.innerHTML=!LIVE?`<div class="panel login"><h3>ยังไม่ได้เชื่อมฐานข้อมูล</h3><p class="note" style="margin:0">ทำตามคู่มือขั้นตอนตั้งค่า Supabase และใส่ค่าใน config.js ก่อน แล้วจึงเข้าสู่ระบบเจ้าของร้านได้</p><button class="ghost" type="button" id="backShop">กลับหน้าร้าน</button></div>`
+      :`<form class="panel login" id="loginForm" novalidate><h3>เข้าสู่ระบบเจ้าของร้าน</h3>
+        <label class="field"><span>อีเมล</span><input id="l_email" type="email" autocomplete="username" required></label>
+        <label class="field"><span>รหัสผ่าน</span><input id="l_pass" type="password" autocomplete="current-password" required></label>
+        <p class="err" id="lErr" hidden></p>
+        <div class="formbar"><button class="primary" type="submit" id="loginBtn">เข้าสู่ระบบ</button><button class="ghost" type="button" id="backShop">กลับหน้าร้าน</button></div></form>`;
+    const f=$("loginForm");if(f)f.addEventListener("submit",doLogin);return;
+  }
+  $("otabs").querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.o===S.otab));
+  if(S.otab==="orders"){
+    const all=S.orders,inF=o=>S.ofilter==="all"||(S.ofilter==="open"?["new","confirmed"].includes(o.status):o.status===S.ofilter);
+    const cnt=k=>all.filter(o=>k==="all"||(k==="open"?["new","confirmed"].includes(o.status):o.status===k)).length;
+    const list=all.filter(inF);
+    P.innerHTML=`<div class="panel"><div class="formbar" style="justify-content:space-between"><div class="filter">${[["open","ต้องจัดการ"],["new","ใหม่"],["confirmed","ยืนยันแล้ว"],["shipped","ส่งแล้ว"],["cancelled","ยกเลิก"],["all","ทั้งหมด"]].map(([k,l])=>`<button class="chip" type="button" data-of="${k}" aria-pressed="${S.ofilter===k}">${l} ${cnt(k)}</button>`).join("")}</div><button class="chip" type="button" id="reloadOrders">รีเฟรช</button></div>
+      <div class="orders">${list.length?list.map(o=>{const c=o.customer||{};return `<div class="order${o.status==="new"?" s-new-b":""}">
+        <div class="top"><b>#${esc(o.code)}</b><span class="pill st-${esc(o.status)}">${STATUS[o.status]}</span><span class="note">${fmtTime(o.created_at)}</span><span class="price" style="margin-left:auto">${baht(o.total)}</span></div>
+        <div><strong>${esc(c.name)}</strong> · <span class="mono">${esc(c.phone)}</span> · ${c.method==="pickup"?"รับที่ร้าน":"จัดส่ง: "+esc(c.address)}</div>
+        <ul>${(o.items||[]).map(i=>`<li><span class="mono">${esc(i.pn)}</span> ${esc(i.name)} × ${Number(i.q)||0} · ${baht((Number(i.q)||0)*(Number(i.price)||0))}</li>`).join("")}</ul>
+        <div class="note">รถ: ${esc(GRADE_NAME[o.grade]||"")} · ดีเซล ${esc(o.engine)}${o.note?" · หมายเหตุ: "+esc(o.note):""}</div>
+        <div class="stbtns">${["confirmed","shipped","cancelled"].filter(s=>s!==o.status).map(s=>`<button class="chip" type="button" data-oid="${esc(o.id)}" data-st="${s}">${{confirmed:"ยืนยัน & ตัดสต็อก",shipped:"ส่งแล้ว",cancelled:"ยกเลิก"}[s]}</button>`).join("")}</div></div>`}).join("")
+        :`<p class="note">${all.length?"ไม่มีออเดอร์ในสถานะนี้":"ยังไม่มีออเดอร์ เมื่อลูกค้าสั่งซื้อ ออเดอร์จะขึ้นที่นี่ (รีเฟรชอัตโนมัติทุก 30 วินาที)"}</p>`}</div></div>`;
+  }else if(S.otab==="products"){
+    const ps=S.parts,ed=S.editId==="new"?{cat:S.cat,icon:"box",stock:0,price:0}:find(S.editId);
+    P.innerHTML=`<div class="cols"><div class="panel"><div class="formbar" style="justify-content:space-between"><h3>อะไหล่ทั้งหมด ${ps.length} รายการ</h3><button class="btn dark" type="button" id="newPart">เพิ่มอะไหล่</button></div>
+      <div class="tablewrap"><table><thead><tr><th>จุด</th><th>ชื่อ</th><th>หมวด</th><th class="num">ราคา</th><th class="num">สต็อก</th><th>บนรถ</th></tr></thead><tbody>
+      ${ps.length?ps.map(p=>`<tr class="pick${p.id===S.editId?" on":""}" data-eid="${esc(p.id)}" tabindex="0"><td><span class="code">${esc(p.code)}</span></td><td>${esc(p.name)}</td><td>${esc(CATS.find(c=>c.id===p.cat)?.name||"")}</td><td class="num">${(Number(p.price)||0).toLocaleString("th-TH")}</td><td class="num"><span class="${(Number(p.stock)||0)<=0?"s-bad":(Number(p.stock)||0)<=3?"s-low":""}">${Number(p.stock)||0}</span></td><td>${Array.isArray(p.pos)?"✓":'<span class="s-low">ยังไม่วาง</span>'}</td></tr>`).join("")
+        :`<tr><td colspan="6" class="note">ยังไม่มีสินค้า กด "เพิ่มอะไหล่" เพื่อเริ่ม</td></tr>`}</tbody></table></div></div>
+      <div class="panel">${ed?partForm(ed):`<p class="note" style="margin:0">เลือกแถวทางซ้ายเพื่อแก้ไข หรือกด "เพิ่มอะไหล่"</p>`}</div></div>`;
+    if(ed)$("partForm").addEventListener("submit",savePart);
+  }else{
+    const s=S.shop;
+    P.innerHTML=`<div class="panel" style="max-width:560px"><h3>ข้อมูลร้าน</h3><form id="shopForm" style="display:flex;flex-direction:column;gap:12px" novalidate>
+      <label class="field"><span>ชื่อร้าน (แสดงหัวหน้าเว็บ)</span><input id="s_name" maxlength="80" value="${esc(s.name)}"></label>
+      <div class="grid2"><label class="field"><span>เบอร์โทรร้าน</span><input id="s_phone" inputmode="tel" value="${esc(s.phone)}"></label>
+      <label class="field"><span>LINE ID</span><input id="s_line" value="${esc(s.line)}"></label></div>
+      <label class="field"><span>PromptPay (เบอร์มือถือ หรือเลขบัตรประชาชน/ผู้เสียภาษี 13 หลัก) สำหรับสร้าง QR พร้อมยอด</span><input id="s_pp" inputmode="numeric" value="${esc(s.promptpay)}"></label>
+      <div class="formbar"><button class="primary" type="submit" style="flex:none">บันทึก</button></div></form></div>`;
+    $("shopForm").addEventListener("submit",saveShop);
+  }
+}
+function partForm(p){
+  const opt=(v,l,cur)=>`<option value="${v}" ${v===cur?"selected":""}>${l}</option>`;
+  const eng=!p.engines||p.engines.length!==1?"both":p.engines[0];
+  return `<h3>${S.editId==="new"?"เพิ่มอะไหล่ใหม่":"แก้ไข "+esc(p.code)}</h3><form id="partForm" style="display:flex;flex-direction:column;gap:10px" novalidate>
+    <div class="grid3"><label class="field"><span>รหัสจุด</span><input id="p_code" maxlength="5" value="${esc(p.code)}" placeholder="E9"></label>
+      <label class="field"><span>หมวด</span><select id="p_cat">${CATS.map(c=>opt(c.id,c.name,p.cat)).join("")}</select></label>
+      <label class="field"><span>ไอคอน</span><select id="p_icon">${Object.keys(ICON_NAME).map(k=>opt(k,ICON_NAME[k],p.icon||"box")).join("")}</select></label></div>
+    <label class="field"><span>ชื่ออะไหล่</span><input id="p_name" maxlength="120" value="${esc(p.name)}"></label>
+    <div class="grid2"><label class="field"><span>เลขอะไหล่</span><input id="p_pn" maxlength="60" value="${esc(p.pn)}"></label>
+      <label class="field"><span>สต็อก (ชิ้น)</span><input id="p_stock" type="number" min="0" step="1" value="${Number(p.stock)||0}"></label></div>
+    <div class="grid3"><label class="field"><span>ราคา (บาท)</span><input id="p_price" type="number" min="0" step="1" value="${Number(p.price)||0}"></label>
+      <label class="field"><span>ราคา Legender</span><input id="p_leg" type="number" min="0" step="1" value="${p.byGrade?.leg??""}" placeholder="เท่าราคาปกติ"></label>
+      <label class="field"><span>ราคา GR Sport</span><input id="p_grs" type="number" min="0" step="1" value="${p.byGrade?.grs??""}" placeholder="เท่าราคาปกติ"></label></div>
+    <label class="field"><span>ใส่ได้กับเครื่องยนต์</span><select id="p_eng">${opt("both","ทั้ง 2.4 และ 2.8",eng)}${opt("2.4","เฉพาะ 2.4",eng)}${opt("2.8","เฉพาะ 2.8",eng)}</select></label>
+    <label class="field"><span>หมายเหตุสำหรับลูกค้า</span><textarea id="p_note" rows="2" maxlength="300">${esc(p.note)}</textarea></label>
+    <p class="err" id="pErr" hidden></p>
+    <div class="formbar"><button class="primary" type="submit" style="flex:none">บันทึก</button>
+      ${S.editId!=="new"?`<button class="ghost" type="button" id="placeFromForm">${Array.isArray(p.pos)?"ย้ายจุดบนรถ":"วางจุดบนรถ"}</button><button class="danger" type="button" id="delPart">ลบ</button>`:""}</div></form>`;
+}
+async function savePart(e){
+  e.preventDefault();const v=id=>$(id).value.trim(),err=m=>{$("pErr").textContent=m;$("pErr").hidden=false};
+  const code=v("p_code").toUpperCase(),name=v("p_name"),price=Math.round(Number(v("p_price"))),stock=Math.max(0,Math.floor(Number(v("p_stock"))||0));
+  if(!code)return err("ใส่รหัสจุด เช่น E9");if(!name)return err("ใส่ชื่ออะไหล่");if(!(price>=0))return err("ราคาต้องเป็นตัวเลข");
+  if(S.parts.some(p=>p.code===code&&p.id!==S.editId))return err("รหัสจุด "+code+" ถูกใช้แล้ว");
+  const by_grade={};if(v("p_leg"))by_grade.leg=Math.round(Number(v("p_leg")));if(v("p_grs"))by_grade.grs=Math.round(Number(v("p_grs")));
+  const eng=v("p_eng"),row={code,name,cat:v("p_cat"),icon:v("p_icon"),pn:v("p_pn"),price,stock,by_grade,engines:eng==="both"?[]:[eng],note:v("p_note")};
+  const q=S.editId==="new"?sb.from("parts").insert(row).select().single():sb.from("parts").update(row).eq("id",S.editId).select().single();
+  const {data,error}=await q;if(error)return err("บันทึกไม่สำเร็จ: "+errText(error));
+  const isNew=S.editId==="new";S.editId=data.id;await loadParts();
+  toast(isNew?"เพิ่มอะไหล่แล้ว · กด วางจุดบนรถ เพื่อกำหนดตำแหน่ง":"บันทึกแล้ว");
+}
+async function saveShop(e){
+  e.preventDefault();const v=id=>$(id).value.trim();
+  const row={name:v("s_name"),phone:v("s_phone"),line:v("s_line"),promptpay:v("s_pp").replace(/\D/g,"")};
+  const {error}=await sb.from("settings").update(row).eq("id",1);
+  if(error)return toast("บันทึกไม่สำเร็จ: "+errText(error));S.shop={...S.shop,...row};renderHeader();toast("บันทึกข้อมูลร้านแล้ว");
+}
+async function setStatus(id,status){
+  const {error}=await sb.rpc("set_order_status",{p_id:id,p_status:status});
+  if(error)return toast("อัปเดตไม่สำเร็จ: "+errText(error));
+  await Promise.all([loadOrders(),loadParts()]);toast("อัปเดตสถานะแล้ว"+(status==="confirmed"?" · ตัดสต็อกแล้ว":status==="cancelled"?" · คืนสต็อกแล้ว (ถ้าเคยตัด)":""));
+}
+async function doLogin(e){
+  e.preventDefault();const err=m=>{$("lErr").textContent=m;$("lErr").hidden=false};
+  const btn=$("loginBtn");btn.disabled=true;
+  const {error}=await sb.auth.signInWithPassword({email:$("l_email").value.trim(),password:$("l_pass").value});
+  btn.disabled=false;if(error)return err("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+  await checkAdmin();if(!S.isAdmin){await sb.auth.signOut();return err("บัญชีนี้ไม่ใช่เจ้าของร้าน")}
+  renderAll();
+}
+async function checkAdmin(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){S.isAdmin=false;S.email="";return}
+  const {data}=await sb.rpc("is_admin");S.isAdmin=data===true;S.email=session.user.email||"";
+  if(S.isAdmin)loadOrders();
+}
+
+/* ================= data ================= */
+async function loadParts(){
+  let data=SAMPLE.map(p=>({...p,by_grade:p.byGrade,eng_pn:p.engPn})),error=null;
+  if(LIVE)({data,error}=await sb.from("parts").select("*"));else S.shop={name:"อะไหล่ Fortuner 2022"};
+  S.partsReady=true;S.loadErr=!!error;
+  if(!error){const ci=c=>CATS.findIndex(x=>x.id===c);
+    S.parts=(data||[]).map(fromRow).sort((a,b)=>ci(a.cat)-ci(b.cat)||String(a.code).localeCompare(String(b.code),undefined,{numeric:true}));
+    for(const [k,it] of Object.entries(S.cart)){const p=find(it.partId);if(!p)delete S.cart[k];else{it.name=p.name;it.code=p.code}}saveCart()}
+  if(!S.sel||!find(S.sel)){const f=S.parts.find(p=>p.cat===S.cat)||S.parts[0];S.sel=f?f.id:null}
+  renderAll();
+}
+async function loadShop(){if(!sb)return;const {data}=await sb.from("settings").select("*").eq("id",1).maybeSingle();if(data){S.shop=data;renderHeader()}}
+async function loadOrders(){
+  if(!sb||!S.isAdmin)return;
+  const {data,error}=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(300);
+  if(error)return;const before=S.orders.filter(o=>o.status==="new").length;S.orders=data||[];
+  const after=S.orders.filter(o=>o.status==="new").length;if(before&&after>before)toast("มีออเดอร์ใหม่เข้ามา");
+  renderHeader();if(S.otab==="orders")renderOffice();
+}
+setInterval(()=>{if(S.isAdmin&&!document.hidden)loadOrders()},30000);
+
+/* ================= events ================= */
+$("tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;S.cat=b.dataset.cat;renderTabs();renderStage();
+  if(G.ok)G.flyTo(new THREE.Vector3(...(S.cat==="engine"?[-.8,.55,.9]:S.cat==="chassis"?[.1,.1,1]:VIEWS.q)),S.cat==="ext"?8.8:7.8)});
+$("spots").addEventListener("click",e=>{const b=e.target.closest(".hs");if(b)select(b.dataset.id)});
+$("list").addEventListener("click",e=>{const b=e.target.closest(".row");if(b)select(b.dataset.id)});
+$("sheet").addEventListener("click",e=>{
+  const p=find(S.sel);if(!p)return;const id=e.target.id;
+  if(id==="plus"){S.qty=Math.min(20,S.qty+1);$("qtyv").textContent=S.qty}
+  if(id==="minus"){S.qty=Math.max(1,S.qty-1);$("qtyv").textContent=S.qty}
+  if(id==="add"&&fits(p)){const k=p.id+"|"+S.grade+"|"+S.engine;const it=S.cart[k]||{partId:p.id,code:p.code,name:p.name,pn:pnOf(p),price:priceOf(p),q:0};
+    it.q=Math.min(20,it.q+S.qty);S.cart[k]=it;saveCart();renderDrawer();toast(`เพิ่ม ${p.name} × ${S.qty} ลงตะกร้าแล้ว`)}
+  if(id==="placeBtn")startPlacing(p.id);
+  if(id==="editBtn"){S.view="office";S.otab="products";S.editId=p.id;renderAll()}
+});
+$("placeCancel").addEventListener("click",stopPlacing);
+$("dbody").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b)return;const k=b.dataset.k;if(!S.cart[k])return;
+  if(b.dataset.d==="x")delete S.cart[k];else{S.cart[k].q=Math.min(20,S.cart[k].q+ +b.dataset.d);if(S.cart[k].q<1)delete S.cart[k]}saveCart();renderDrawer()});
+$("drawer").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;if(g==="close")return closeDrawer();S.dmode=g;renderDrawer();if(g==="mine")loadMyStatus()});
+$("grade").addEventListener("change",e=>{S.grade=e.target.value;renderStage();renderSheet()});
+$("engine").addEventListener("change",e=>{S.engine=e.target.value;renderStage();renderSheet()});
+$("openCart").addEventListener("click",()=>openDrawer(S.dmode==="form"?"form":"cart"));
+$("closeCart").addEventListener("click",closeDrawer);$("scrim").addEventListener("click",closeDrawer);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();$("results").hidden=true;stopPlacing()}});
+$("q").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase(),r=$("results");if(!q){r.hidden=true;return}
+  const hit=S.parts.filter(p=>(p.name+" "+p.code+" "+p.pn).toLowerCase().includes(q)).slice(0,7);
+  r.innerHTML=hit.length?hit.map(p=>`<button type="button" data-id="${esc(p.id)}"><span class="code">${esc(p.code)}</span><span>${esc(p.name)}</span></button>`).join(""):`<div class="empty">ไม่พบ "${esc(e.target.value)}"</div>`;r.hidden=false});
+$("results").addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(!b)return;$("results").hidden=true;$("q").value="";select(b.dataset.id)});
+document.addEventListener("click",e=>{if(!e.target.closest(".search"))$("results").hidden=true});
+$("views").addEventListener("click",e=>{const b=e.target.closest("[data-view]");if(b&&G.ok)G.flyTo(new THREE.Vector3(...VIEWS[b.dataset.view]),8.8)});
+$("spin").addEventListener("click",e=>{if(!G.ok)return;const on=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",on);G.controls.autoRotate=on});
+$("paints").insertAdjacentHTML("beforeend",PAINTS.map(([n,c],i)=>`<button type="button" class="sw" data-i="${i}" aria-label="สี${n}" title="${n}" aria-pressed="${i===0}" style="background:#${c.toString(16).padStart(6,"0")}"></button>`).join(""));
+$("paints").addEventListener("click",e=>{const b=e.target.closest(".sw");if(!b||!G.ok)return;$("paints").querySelectorAll(".sw").forEach(x=>x.setAttribute("aria-pressed",x===b));G.M.paint.color.setHex(PAINTS[+b.dataset.i][1])});
+$("officeBtn").addEventListener("click",()=>{S.view=S.view==="office"?"shop":"office";stopPlacing();if(S.view==="office")loadOrders();renderAll()});
+$("ownerLink").addEventListener("click",async()=>{if(S.isAdmin){await sb.auth.signOut();S.isAdmin=false;S.orders=[];S.view="shop";renderAll();toast("ออกจากระบบแล้ว")}else{S.view="office";renderAll();scrollTo(0,0)}});
+$("otabs").addEventListener("click",e=>{const b=e.target.closest("[data-o]");if(!b)return;S.otab=b.dataset.o;renderOffice()});
+$("opanel").addEventListener("click",e=>{
+  if(e.target.id==="backShop"){S.view="shop";return renderAll()}
+  if(e.target.id==="reloadOrders")return loadOrders();
+  const of=e.target.closest("[data-of]");if(of){S.ofilter=of.dataset.of;return renderOffice()}
+  const sbt=e.target.closest("[data-st]");if(sbt){sbt.disabled=true;return setStatus(sbt.dataset.oid,sbt.dataset.st)}
+  const tr=e.target.closest("[data-eid]");if(tr){S.editId=tr.dataset.eid;return renderOffice()}
+  if(e.target.id==="newPart"){S.editId="new";return renderOffice()}
+  if(e.target.id==="placeFromForm"){const id=S.editId;S.view="shop";renderAll();select(id,false);startPlacing(id);return}
+  if(e.target.id==="delPart"){const b=e.target;if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="กดอีกครั้งเพื่อยืนยันลบ";setTimeout(()=>{if(b.isConnected){b.classList.remove("armed");b.textContent="ลบ"}},4000);return}
+    const id=S.editId;sb.from("parts").delete().eq("id",id).then(({error})=>{if(error)return toast("ลบไม่สำเร็จ: "+errText(error));S.editId=null;if(S.sel===id)S.sel=null;loadParts();toast("ลบแล้ว")})}
+});
+$("opanel").addEventListener("keydown",e=>{if(e.key==="Enter"){const tr=e.target.closest("[data-eid]");if(tr){S.editId=tr.dataset.eid;renderOffice()}}});
+
+function renderAll(){renderHeader();renderTabs();renderStage();renderSheet();renderDrawer();renderOffice()}
+
+if(location.hash==="#admin")S.view="office";
+init3D();renderAll();
+(async()=>{
+  if(sb){sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT"){S.isAdmin=false;renderAll()}});await checkAdmin()}
+  await Promise.all([loadParts(),loadShop()]);
+})();
+</script>
+</body>
+</html>
