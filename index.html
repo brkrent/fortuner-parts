@@ -274,6 +274,8 @@ footer button{border:0;background:none;color:var(--muted);text-decoration:underl
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 /* ================= constants & helpers ================= */
@@ -535,6 +537,29 @@ function init3D(){
     for(const m of shell){m.transparent=on;m.opacity=on?((m===M.rubber||m===M.alloy||m===M.barrel||m===M.disc)?.35:.12):1;m.depthWrite=!on;m.needsUpdate=true}
     inner.engine.visible=cat==="engine";inner.chassis.visible=cat==="chassis"}
   car.updateMatrixWorld(true);
+
+  // Real car model: a file named car.glb next to index.html replaces the built-in car automatically
+  if(THREE.GLTFLoader){
+    const loader=new THREE.GLTFLoader();
+    if(THREE.DRACOLoader){const dl=new THREE.DRACOLoader();dl.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.4.1/");loader.setDRACOLoader(dl)}
+    loader.load("/car.glb"+(CFG.MODEL_VERSION?"?v="+encodeURIComponent(CFG.MODEL_VERSION):""),gltf=>{
+      const m=gltf.scene,pivot=new THREE.Group();pivot.add(m);
+      let b=new THREE.Box3().setFromObject(m),size=b.getSize(new THREE.Vector3());
+      // lay the long side along X with the front toward -X (glTF cars usually face +Z); MODEL_ROTATE in config.js turns it further
+      if(size.z>size.x)pivot.rotation.y=-Math.PI/2;
+      pivot.rotation.y+=(Number(CFG.MODEL_ROTATE)||0)*Math.PI/180;
+      pivot.updateMatrixWorld(true);b=new THREE.Box3().setFromObject(pivot);size=b.getSize(new THREE.Vector3());
+      const len=Math.max(size.x,size.z);if(!(len>0))return;
+      pivot.scale.setScalar(4.79/len);pivot.updateMatrixWorld(true);
+      b=new THREE.Box3().setFromObject(pivot);const c=b.getCenter(new THREE.Vector3());
+      pivot.position.set(-c.x,-b.min.y,-c.z);
+      m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;for(const mm of [].concat(o.material))if(mm&&!shell.includes(mm))shell.push(mm)}});
+      while(car.children.length)car.remove(car.children[0]);
+      car.add(pivot);car.updateMatrixWorld(true);
+      $("paints").hidden=true;G.realModel=true;
+      S.parts.forEach(p=>p._key=null);renderStage();
+    },undefined,()=>{});
+  }
   const ray=new THREE.Raycaster();
   function snap(p){
     const base=new THREE.Vector3(...p.pos);if(!Array.isArray(p.n))return base;
